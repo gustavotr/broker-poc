@@ -6,16 +6,16 @@ import (
 )
 
 type Book struct {
-	Orders        []*Order
+	Order         []*Order
 	Transactions  []*Transaction
-	OrdersChan    chan *Order
+	OrdersChan    chan *Order // input
 	OrdersChanOut chan *Order
 	Wg            *sync.WaitGroup
 }
 
 func NewBook(orderChan chan *Order, orderChanOut chan *Order, wg *sync.WaitGroup) *Book {
 	return &Book{
-		Orders:        []*Order{},
+		Order:         []*Order{},
 		Transactions:  []*Transaction{},
 		OrdersChan:    orderChan,
 		OrdersChanOut: orderChanOut,
@@ -39,6 +39,7 @@ func (b *Book) Trade() {
 			buyOrders[asset] = NewOrderQueue()
 			heap.Init(buyOrders[asset])
 		}
+
 		if sellOrders[asset] == nil {
 			sellOrders[asset] = NewOrderQueue()
 			heap.Init(sellOrders[asset])
@@ -76,7 +77,6 @@ func (b *Book) Trade() {
 					}
 				}
 			}
-
 		}
 	}
 }
@@ -92,21 +92,14 @@ func (b *Book) AddTransaction(transaction *Transaction, wg *sync.WaitGroup) {
 		minShares = buyingShares
 	}
 
-	transaction.SellingOrder.Investor.UpdateAssetPosition(
-		transaction.SellingOrder.Asset.ID,
-		-minShares,
-	)
+	transaction.SellingOrder.Investor.UpdateAssetPosition(transaction.SellingOrder.Asset.ID, -minShares)
 	transaction.AddSellOrderPendingShares(-minShares)
 
-	transaction.BuyingOrder.Investor.UpdateAssetPosition(
-		transaction.BuyingOrder.Asset.ID,
-		minShares,
-	)
+	transaction.BuyingOrder.Investor.UpdateAssetPosition(transaction.BuyingOrder.Asset.ID, minShares)
+	transaction.AddBuyOrderPendingShares(-minShares)
 
-	transaction.AddBuyOrderPendingShares(minShares)
-	transaction.CalculateTotal()
+	transaction.CalculateTotal(transaction.Shares, transaction.BuyingOrder.Price)
 	transaction.CloseBuyOrder()
 	transaction.CloseSellOrder()
-
 	b.Transactions = append(b.Transactions, transaction)
 }

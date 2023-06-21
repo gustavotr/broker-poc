@@ -41,11 +41,7 @@ func TestBuyAsset(t *testing.T) {
 	assert.Equal(0, order2.PendingShares, "Order 2 should have 0 PendingShares")
 
 	assert.Equal(5, investorAssetPosition.Shares, "Investor 1 should have 5 shares of asset 1")
-	assert.Equal(
-		5,
-		investor2.GetAssetPosition("asset1").Shares,
-		"Investor 2 should have 5 shares of asset 1",
-	)
+	assert.Equal(5, investor2.GetAssetPosition("asset1").Shares, "Investor 2 should have 5 shares of asset 1")
 }
 
 func TestBuyAssetWithDifferentAssents(t *testing.T) {
@@ -126,11 +122,7 @@ func TestBuyPartialAsset(t *testing.T) {
 	assert.Equal(2, order2.PendingShares, "Order 2 should have 2 PendingShares")
 
 	assert.Equal(0, investorAssetPosition.Shares, "Investor 1 should have 0 shares of asset 1")
-	assert.Equal(
-		3,
-		investor2.GetAssetPosition("asset1").Shares,
-		"Investor 2 should have 3 shares of asset 1",
-	)
+	assert.Equal(3, investor2.GetAssetPosition("asset1").Shares, "Investor 2 should have 3 shares of asset 1")
 
 	wg.Add(1)
 	order3 := NewOrder("3", investor3, asset1, 2, 5.0, "SELL")
@@ -192,11 +184,7 @@ func TestBuyWithDifferentPrice(t *testing.T) {
 	assert.Equal(2, order2.PendingShares, "Order 2 should have 2 PendingShares")
 
 	assert.Equal(0, investorAssetPosition.Shares, "Investor 1 should have 0 shares of asset 1")
-	assert.Equal(
-		3,
-		investor2.GetAssetPosition("asset1").Shares,
-		"Investor 2 should have 3 shares of asset 1",
-	)
+	assert.Equal(3, investor2.GetAssetPosition("asset1").Shares, "Investor 2 should have 3 shares of asset 1")
 
 	wg.Add(1)
 	order3 := NewOrder("3", investor3, asset1, 3, 4.5, "SELL")
